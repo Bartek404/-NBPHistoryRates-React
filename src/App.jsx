@@ -3,22 +3,29 @@ import { CurrencyBox } from "./components/CurrencyBox";
 import { Calendar } from "./components/Calendar";
 
 function App() {
-  const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
-  const [currency, setCurrency] = useState("eur");
-  const [amountOne, setAmountOne] = useState(0);
-  const [amountTwo, setAmountTwo] = useState(0);
+  const [states, setStates] = useState({
+    /* date: new Date().toISOString().slice(0, 10), */
+    amountOne: 0,
+    amountTwo: 0,
+  });
+
+  const [nbpStates, setNbpStates] = useState({
+    date: "2024-07-16",
+    currency: "eur",
+  });
+
   const [exchangeRate, setExchangeRate] = useState(0);
 
   useEffect(() => {
-    fetch(`https://api.nbp.pl/api/exchangerates/rates/a/${currency}/${date}`)
+    fetch(
+      `https://api.nbp.pl/api/exchangerates/rates/a/${nbpStates.currency}/${nbpStates.date}`,
+    )
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
-        console.log(data.rates[0].mid);
         setExchangeRate(data.rates[0].mid);
       })
       .catch((err) => console.log(err));
-  }, [currency, date]);
+  }, [nbpStates, exchangeRate]);
 
   return (
     <main className="flex h-screen w-screen flex-col items-center justify-center bg-gradient-to-bl from-sky-500 to-indigo-500 p-4">
@@ -26,30 +33,41 @@ function App() {
         <h1 className="pt-4 text-center text-4xl font-bold">
           Kursy Archiwalne NBP
         </h1>
-        <p>(wczesna wersja)</p>
+        <p>(wczesna wersja, podejście drugie)</p>
         <Calendar
-          date={date}
-          setDate={(e) => setDate(e.target.value)}
+          date={nbpStates.date}
+          setDate={(e) => {
+            setNbpStates({ ...nbpStates, date: e.target.value });
+            console.log(nbpStates);
+          }}
         ></Calendar>
         <hr />
         <CurrencyBox
-          amount={amountOne}
+          amount={states.amountOne}
           setAmount={(e) => {
-            setAmountOne(e.target.value);
-            setAmountTwo(e.target.value * exchangeRate);
+            setStates({
+              ...states,
+              amountOne: e.target.value,
+              amountTwo: states.amountOne * exchangeRate,
+            });
           }}
-          currency={currency}
-          setCurrency={(e) => setCurrency(e.target.value)}
+          currency={nbpStates.currency}
+          setCurrency={(e) =>
+            setNbpStates({ ...nbpStates, currency: e.target.value })
+          }
           isSelectShown={true}
         >
           Waluta zagraniczna
         </CurrencyBox>
         <hr />
         <CurrencyBox
-          amount={amountTwo}
+          amount={states.amountTwo}
           setAmount={(e) => {
-            setAmountTwo(e.target.value);
-            setAmountOne(e.target.value / exchangeRate);
+            setStates({
+              ...states,
+              amountTwo: e.target.value,
+              amountOne: states.amountTwo * exchangeRate,
+            });
           }}
           isSelectShown={false}
         >
@@ -58,7 +76,9 @@ function App() {
 
         <hr />
 
-        <span>Tu będą nformacje o kursie, blędach, świętach itd.</span>
+        <span>
+          {nbpStates.currency} {exchangeRate} {nbpStates.date}
+        </span>
       </div>
     </main>
   );
