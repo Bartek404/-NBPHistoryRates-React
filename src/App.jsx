@@ -65,7 +65,7 @@ function App() {
           setCurrency={(e) => setCurrency(e.target.value)}
           isSelectShown={true}
         >
-          {currency}
+          {currency.toUpperCase()}
         </CurrencyBox>
 
         <hr />
