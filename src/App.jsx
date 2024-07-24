@@ -5,9 +5,9 @@ import { Calendar } from "./components/Calendar";
 function App() {
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
   const [currency, setCurrency] = useState("eur");
-  const [amountOne, setAmountOne] = useState(0);
-  const [amountTwo, setAmountTwo] = useState(0);
-  const [exchangeRate, setExchangeRate] = useState(0);
+  const [foreignAmount, setForeignAmount] = useState(1);
+  const [plnAmount, setPlnAmount] = useState(0);
+  const [exchangeRate, setExchangeRate] = useState(null);
 
   useEffect(() => {
     fetch(`https://api.nbp.pl/api/exchangerates/rates/a/${currency}/${date}`)
@@ -15,24 +15,33 @@ function App() {
       .then((data) => {
         setExchangeRate(data.rates[0].mid);
       })
-      .catch((err) => console.log(err));
-  }, [currency, date]);
+      .catch((err) => {
+        console.log(err);
+        setExchangeRate(null);
+      });
+  }, [date, currency]);
 
-  useEffect(
-    function calculate() {
-      setAmountTwo(amountOne * exchangeRate);
-    },
-    [amountOne, exchangeRate],
-  );
+  useEffect(() => {
+    if (exchangeRate !== null) {
+      setPlnAmount(foreignAmount * exchangeRate);
+    }
+  }, [exchangeRate, foreignAmount]);
 
-  function calculate(e) {
-    setAmountOne(e.target.valueAsNumber);
-    setAmountTwo(amountOne * exchangeRate);
-  }
+  const handleForeignAmountChange = (e) => {
+    const value = parseFloat(e.target.value) || 0;
+    setForeignAmount(value);
+    if (exchangeRate !== null) {
+      setPlnAmount(value * exchangeRate);
+    }
+  };
 
-  function calculateTwo() {
-    setAmountOne(amountTwo / exchangeRate);
-  }
+  const handlePlnAmountChange = (e) => {
+    const value = parseFloat(e.target.value) || 0;
+    setPlnAmount(value);
+    if (exchangeRate !== null) {
+      setForeignAmount(value / exchangeRate);
+    }
+  };
 
   return (
     <main className="flex h-screen w-screen flex-col items-center justify-center bg-gradient-to-bl from-sky-500 to-indigo-500 p-4">
@@ -41,39 +50,29 @@ function App() {
           Kursy Archiwalne NBP
         </h1>
         <p>(wczesna wersja)</p>
-        <Calendar
-          date={date}
-          setDate={(e) => setDate(e.target.value)}
-        ></Calendar>
+        <Calendar date={date} setDate={(e) => setDate(e.target.value)} />
         <hr />
 
         <CurrencyBox
-          amount={amountOne}
-          setAmount={calculate}
+          amount={foreignAmount}
+          setAmount={handleForeignAmountChange}
           currency={currency}
           setCurrency={(e) => setCurrency(e.target.value)}
           isSelectShown={true}
         >
-          Waluta zagraniczna
+          {currency}
         </CurrencyBox>
 
         <hr />
 
         <CurrencyBox
-          amount={amountTwo}
-          setAmount={(e) => setAmountTwo(e.target.valueAsNumber)}
+          amount={plnAmount}
+          setAmount={handlePlnAmountChange}
           isSelectShown={false}
-          readOnly={false}
         >
           PLN
         </CurrencyBox>
 
-        <button
-          className="mx-20 my-5 rounded border border-sky-500 bg-transparent px-4 py-2 font-semibold text-sky-700 hover:border-transparent hover:bg-sky-500 hover:text-white"
-          onClick={calculateTwo}
-        >
-          Przelicz odwrotnie
-        </button>
         <hr />
 
         <span>

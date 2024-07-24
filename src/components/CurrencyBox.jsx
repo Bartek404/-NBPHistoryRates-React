@@ -4,7 +4,6 @@ export function CurrencyBox({
   currency,
   setCurrency,
   isSelectShown,
-  readOnly,
   children,
 }) {
   return (
@@ -20,7 +19,6 @@ export function CurrencyBox({
             type="number"
             id="amount-one"
             placeholder="Podaj kwotę"
-            readOnly={readOnly}
           />
         </div>
         {isSelectShown && (
