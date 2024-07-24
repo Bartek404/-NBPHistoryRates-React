@@ -27,21 +27,26 @@ function App() {
     }
   }, [exchangeRate, foreignAmount]);
 
-  const handleForeignAmountChange = (e) => {
-    const value = parseFloat(e.target.value) || 0;
+  function handleForeignAmountChange(e) {
+    const value = parseFloat(e.target.value) || "";
     setForeignAmount(value);
     if (exchangeRate !== null) {
       setPlnAmount(value * exchangeRate);
     }
-  };
+  }
 
-  const handlePlnAmountChange = (e) => {
-    const value = parseFloat(e.target.value) || 0;
+  function handlePlnAmountChange(e) {
+    const value = parseFloat(e.target.value) || "";
     setPlnAmount(value);
     if (exchangeRate !== null) {
       setForeignAmount(value / exchangeRate);
     }
-  };
+  }
+
+  function handleResetButton() {
+    setForeignAmount(0);
+    setPlnAmount(0);
+  }
 
   return (
     <main className="flex h-screen w-screen flex-col items-center justify-center bg-gradient-to-bl from-sky-500 to-indigo-500 p-4">
@@ -74,6 +79,13 @@ function App() {
         </CurrencyBox>
 
         <hr />
+
+        <button
+          className="rounded border border-blue-700 bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
+          onClick={handleResetButton}
+        >
+          Reset
+        </button>
 
         <span>
           <center>
