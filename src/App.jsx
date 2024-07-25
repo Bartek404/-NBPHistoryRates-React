@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { CurrencyBox } from "./components/CurrencyBox";
 import { Calendar } from "./components/Calendar";
+import { Button } from "./components/Button";
+import { InfoBox } from "./components/InfoBox";
 
 function App() {
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
@@ -8,6 +10,10 @@ function App() {
   const [foreignAmount, setForeignAmount] = useState(1);
   const [plnAmount, setPlnAmount] = useState(0);
   const [exchangeRate, setExchangeRate] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  /* do poprawy fetch, uzyc odpowiedzi na okej i nie okej, dwa warianty */
 
   useEffect(() => {
     fetch(`https://api.nbp.pl/api/exchangerates/rates/a/${currency}/${date}`)
@@ -15,8 +21,12 @@ function App() {
       .then((data) => {
         setExchangeRate(data.rates[0].mid);
       })
+      .then(setIsLoading(false))
       .catch((err) => {
         console.log(err);
+        setErrorMessage(
+          "Wystąpił błąd połączenia, sprawdź konsolę przeglądarki po więcej informacji",
+        );
         setExchangeRate(null);
       });
   }, [date, currency]);
@@ -35,17 +45,14 @@ function App() {
     }
   }
 
-  function handlePlnAmountChange(e) {
-    const value = parseFloat(e.target.value) || "";
-    setPlnAmount(value);
+  function handlePlnAmountChange() {
     if (exchangeRate !== null) {
-      setForeignAmount(value / exchangeRate);
+      setForeignAmount(plnAmount / exchangeRate);
     }
   }
 
-  function handleResetButton() {
-    setForeignAmount(0);
-    setPlnAmount(0);
+  function handleReset() {
+    setForeignAmount(1);
   }
 
   return (
@@ -72,7 +79,9 @@ function App() {
 
         <CurrencyBox
           amount={plnAmount}
-          setAmount={handlePlnAmountChange}
+          setAmount={(e) => {
+            setPlnAmount(parseFloat(e.target.value));
+          }}
           isSelectShown={false}
         >
           PLN
@@ -80,18 +89,22 @@ function App() {
 
         <hr />
 
-        <button
-          className="rounded border border-blue-700 bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
-          onClick={handleResetButton}
-        >
-          Reset
-        </button>
+        <div className="text-center">
+          <Button onClick={handlePlnAmountChange}>
+            PLN/{currency.toUpperCase()}
+          </Button>
+          <Button onClick={handleReset}>RESET</Button>
+        </div>
 
-        <span>
-          <center>
-            {date}/{currency}/{exchangeRate}
-          </center>
-        </span>
+        <hr />
+
+        <InfoBox
+          isLoading={isLoading}
+          date={date}
+          currency={currency}
+          exchangeRate={exchangeRate}
+          errorMessage={errorMessage}
+        ></InfoBox>
       </div>
     </main>
   );
