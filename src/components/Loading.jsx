@@ -1,6 +1,18 @@
-export function Loading() {
+export function Loading({ errorMessage, holidayName }) {
+  function handleErrors() {
+    if (errorMessage === "") {
+      return <p>Pobieranie danych...</p>;
+    }
+    return (
+      <>
+        <p>{errorMessage}</p>
+        <p>{holidayName}</p>
+      </>
+    );
+  }
+
   return (
-    <div className="text-center">
+    <div className="my-3 text-center">
       <svg
         aria-hidden="true"
         role="status"
@@ -18,7 +30,7 @@ export function Loading() {
           fill="currentColor"
         />
       </svg>
-      <p>Pobieranie danych...</p>
+      {handleErrors()}
     </div>
   );
 }

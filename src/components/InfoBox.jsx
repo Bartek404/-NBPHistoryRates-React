@@ -6,9 +6,10 @@ export function InfoBox({
   currency,
   exchangeRate,
   errorMessage,
+  holidayName,
 }) {
   if (isLoading === true) {
-    return <Loading></Loading>;
+    return <Loading errorMessage={errorMessage} holidayName={holidayName} />;
   }
 
   return (
@@ -18,9 +19,7 @@ export function InfoBox({
         <p>Waluta: {currency.toUpperCase()}</p>
         <p>Kurs wymiany: {exchangeRate} PLN</p>
       </div>
-      <div>
-        <p>{errorMessage}</p>
-      </div>
+      <div></div>
     </div>
   );
 }

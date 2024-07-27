@@ -12,24 +12,52 @@ function App() {
   const [exchangeRate, setExchangeRate] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
-
-  /* do poprawy fetch, uzyc odpowiedzi na okej i nie okej, dwa warianty */
+  const [holidayName, setHolidayName] = useState("");
 
   useEffect(() => {
     fetch(`https://api.nbp.pl/api/exchangerates/rates/a/${currency}/${date}`)
-      .then((res) => res.json())
+      .then((res) => {
+        if (res.ok) {
+          setIsLoading(false);
+          setErrorMessage("");
+          return res.json();
+        }
+        throw new Error("Błąd ładowania danych!");
+      })
       .then((data) => {
         setExchangeRate(data.rates[0].mid);
       })
-      .then(setIsLoading(false))
-      .catch((err) => {
-        console.log(err);
-        setErrorMessage(
-          "Wystąpił błąd połączenia, sprawdź konsolę przeglądarki po więcej informacji",
-        );
+      .catch((Error) => {
+        console.log(Error);
+        setErrorMessage(Error.message);
         setExchangeRate(null);
+        setIsLoading(true);
       });
   }, [date, currency]);
+
+  /* sprawdzic wyswietlanie bledow o swietach narodowych */
+
+  useEffect(() => {
+    setHolidayName("");
+    const year = date.slice(0, 4);
+    fetch(`https://date.nager.at/api/v3/publicholidays/${year}/PL`)
+      .then((res) => {
+        if (res.ok) {
+          return res.json();
+        }
+        throw new Error("Błąd ładowania danych!");
+      })
+      .then((data) => {
+        data.forEach((element) => {
+          if (element.date === date) {
+            return setHolidayName(element.localName);
+          }
+        });
+      })
+      .catch((Error) => {
+        setErrorMessage(Error.message);
+      });
+  }, [date]);
 
   useEffect(() => {
     if (exchangeRate !== null) {
@@ -56,12 +84,11 @@ function App() {
   }
 
   return (
-    <main className="flex h-screen w-screen flex-col items-center justify-center bg-gradient-to-bl from-sky-500 to-indigo-500 p-4">
+    <main className="flex w-10/12 flex-col items-center justify-center p-4">
       <div className="flex flex-col justify-center rounded-lg bg-white p-4">
         <h1 className="pt-4 text-center text-4xl font-bold">
           Kursy Archiwalne NBP
         </h1>
-        <p>(wczesna wersja)</p>
         <Calendar date={date} setDate={(e) => setDate(e.target.value)} />
         <hr />
 
@@ -104,6 +131,7 @@ function App() {
           currency={currency}
           exchangeRate={exchangeRate}
           errorMessage={errorMessage}
+          holidayName={holidayName}
         ></InfoBox>
       </div>
     </main>
