@@ -3,6 +3,7 @@ import { CurrencyBox } from "./components/CurrencyBox";
 import { Calendar } from "./components/Calendar";
 import { Button } from "./components/Button";
 import { InfoBox } from "./components/InfoBox";
+import { checkWeekend } from "./utils/checkWeekend";
 
 function App() {
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
@@ -22,20 +23,17 @@ function App() {
           setErrorMessage("");
           return res.json();
         }
-        throw new Error("Błąd ładowania danych!");
+        throw new Error("Błąd ładowania");
       })
       .then((data) => {
         setExchangeRate(data.rates[0].mid);
       })
       .catch((Error) => {
-        console.log(Error);
         setErrorMessage(Error.message);
         setExchangeRate(null);
         setIsLoading(true);
       });
   }, [date, currency]);
-
-  /* sprawdzic wyswietlanie bledow o swietach narodowych */
 
   useEffect(() => {
     setHolidayName("");
@@ -45,9 +43,10 @@ function App() {
         if (res.ok) {
           return res.json();
         }
-        throw new Error("Błąd ładowania danych!");
+        throw new Error("Błąd ładowania");
       })
       .then((data) => {
+        setHolidayName(checkWeekend(date));
         data.forEach((element) => {
           if (element.date === date) {
             return setHolidayName(element.localName);

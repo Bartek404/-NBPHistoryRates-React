@@ -4,10 +4,10 @@ export function Loading({ errorMessage, holidayName }) {
       return <p>Pobieranie danych...</p>;
     }
     return (
-      <>
+      <div className="text-center">
         <p>{errorMessage}</p>
         <p>{holidayName}</p>
-      </>
+      </div>
     );
   }
 
