@@ -83,10 +83,10 @@ function App() {
   }
 
   return (
-    <main className="flex flex-col items-center justify-center p-4 md:w-10/12 ">
-      <div className="flex flex-col justify-center rounded-lg bg-slate-400 p-4 border-2 border-slate-200">
+    <main className="flex flex-col items-center justify-center p-4 md:w-10/12">
+      <div className="flex flex-col justify-center rounded-lg border-2 border-slate-200 bg-slate-400 p-4">
         <h1 className="pt-4 text-center text-4xl font-bold text-slate-100 underline">
-        Kursy Archiwalne NBP
+          Kursy Archiwalne NBP
         </h1>
         <Calendar date={date} setDate={(e) => setDate(e.target.value)} />
         <hr />
@@ -107,7 +107,7 @@ function App() {
             fill="none"
             viewBox="0 0 24 24"
             strokeWidth={1.5}
-            stroke="#0369a1"
+            stroke="#e2e8f0"
             className="size-7"
           >
             <path
