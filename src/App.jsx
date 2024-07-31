@@ -23,7 +23,7 @@ function App() {
           setErrorMessage("");
           return res.json();
         }
-        throw new Error("Błąd ładowania");
+        throw new Error("Błąd ładowania.");
       })
       .then((data) => {
         setExchangeRate(data.rates[0].mid);
@@ -43,7 +43,7 @@ function App() {
         if (res.ok) {
           return res.json();
         }
-        throw new Error("Błąd ładowania");
+        throw new Error("Błąd ładowania.");
       })
       .then((data) => {
         setHolidayName(checkWeekend(date));
@@ -83,10 +83,10 @@ function App() {
   }
 
   return (
-    <main className="flex w-10/12 flex-col items-center justify-center p-4">
-      <div className="flex flex-col justify-center rounded-lg bg-white p-4">
-        <h1 className="pt-4 text-center text-4xl font-bold">
-          Kursy Archiwalne NBP
+    <main className="flex flex-col items-center justify-center p-4 md:w-10/12 ">
+      <div className="flex flex-col justify-center rounded-lg bg-slate-400 p-4 border-2 border-slate-200">
+        <h1 className="pt-4 text-center text-4xl font-bold text-slate-100 underline">
+        Kursy Archiwalne NBP
         </h1>
         <Calendar date={date} setDate={(e) => setDate(e.target.value)} />
         <hr />
@@ -101,7 +101,22 @@ function App() {
           {currency.toUpperCase()}
         </CurrencyBox>
 
-        <hr />
+        <div className="m-auto">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="#0369a1"
+            className="size-7"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 0 0-3.7-3.7 48.678 48.678 0 0 0-7.324 0 4.006 4.006 0 0 0-3.7 3.7c-.017.22-.032.441-.046.662M19.5 12l3-3m-3 3-3-3m-12 3c0 1.232.046 2.453.138 3.662a4.006 4.006 0 0 0 3.7 3.7 48.656 48.656 0 0 0 7.324 0 4.006 4.006 0 0 0 3.7-3.7c.017-.22.032-.441.046-.662M4.5 12l3 3m-3-3-3 3"
+            />
+          </svg>
+        </div>
 
         <CurrencyBox
           amount={plnAmount}
